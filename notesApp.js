@@ -5,6 +5,9 @@ const notesDiv = document.getElementById('notes');
 const deletedNotesDiv = document.getElementById('deletedNotes');
 const archivedNotesDiv = document.getElementById('archivedNotes');
 
+localStorage.removeItem('deletedNotes');
+localStorage.removeItem('archivedNotes');
+
 showNotes();
 // local storage vs session storage
 // JSON: JavaScript Object Notation
@@ -61,12 +64,25 @@ function deleteNote(ind){
     }else{
         notes = JSON.parse(notes);
     }
+    const deletedNote = {
+        ...notes[ind],
+        deleted: new Date().toISOString()
+    };
+    let deletedNotes = localStorage.getItem('deletedNotes');
+    if(deletedNotes === null){
+        deletedNotes = [];
+    }else{
+        deletedNotes = JSON.parse(deletedNotes);
+    }
+    deletedNotes.push(deletedNote);
+    localStorage.setItem('deletedNotes', JSON.stringify(deletedNotes));
     notes.splice(ind, 1);
     localStorage.setItem('notes', JSON.stringify(notes));
     showNotes();
+    showDeletedNotes();
 }
-addNoteButton.addEventListener('click', addNotes);
 
+addNoteButton.addEventListener('click', addNotes);
 
 // assignment
 
@@ -79,7 +95,7 @@ optional:
 5. reminder
 */
 
-// 1. delete notes: implementation delete array
+// 1. Display Deleted Notes
 
 function showDeletedNotes(){
     let deletedNotesHTML = '';
@@ -100,7 +116,8 @@ function showDeletedNotes(){
     deletedNotesDiv.innerHTML = deletedNotesHTML;
 }
 
-// 2. Archieve Notes: implementation archieve array
+// 2. Archived Note
+
 function archiveNote(ind) {
     let notes = localStorage.getItem("notes");
     if (notes === null) {
@@ -155,7 +172,7 @@ function archiveNote(ind) {
     
   }
 
-// 3. edit note
+// 3. Edit Note
 
   function editNote(ind) {
     let notes = localStorage.getItem("notes");
@@ -185,5 +202,3 @@ function archiveNote(ind) {
     showNotes();
   }
   
-
-
