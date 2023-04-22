@@ -45,6 +45,7 @@ function showNotes(){
         notesHTML += `<div class="note">
                     <span class="title">${notes[i].title === "" ? 'Note' : notes[i].title}</span>
                     <div class="text">${notes[i].text}</div>
+                    <button class="editNote" id="${i}" onclick="editNote(${i})">Edit</button>
                     <button class="deleteNote" id=${i} onclick="deleteNote(${i})">Delete</button>
                     <button class="archiveNote" id="${i}" onclick="archiveNote(${i})">Archive</button>    
                 </div>
@@ -73,6 +74,7 @@ addNoteButton.addEventListener('click', addNotes);
 1. delete notes: implementation delete array
 2. Archieve Notes: implementation archieve array
 3. edit note
+optional: 
 4. sorting filter, iterate through all the notes, and check 
 5. reminder
 */
@@ -152,5 +154,36 @@ function archiveNote(ind) {
     archivedNotesDiv.innerHTML = archivedNotesHTML;
     
   }
+
+// 3. edit note
+
+  function editNote(ind) {
+    let notes = localStorage.getItem("notes");
+    if (notes === null) {
+      return;
+    } else {
+      notes = JSON.parse(notes);
+    }
+  
+    const note = notes[ind];
+    if (note.title === "" || note.text === "") {
+      return;
+    }
+
+    const editedtitleNote = prompt("Edit your title of the note", note.title);
+    if (editedtitleNote === null) {
+      return;
+    }
+  
+    const editeddescNote = prompt("Edit your description of the note", note.text);
+    if (editeddescNote === null) {
+      return;
+    }
+    note.title=editedtitleNote
+    note.text = editeddescNote;
+    localStorage.setItem("notes", JSON.stringify(notes));
+    showNotes();
+  }
+  
 
 
