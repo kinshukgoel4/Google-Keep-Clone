@@ -2,6 +2,7 @@ const addTitle = document.getElementById('addTitle');
 const addText = document.getElementById('addText');
 const addNoteButton = document.getElementById('addNote');
 const notesDiv = document.getElementById('notes');
+const deletedNotesDiv = document.getElementById('deletedNotes');
 
 showNotes();
 // local storage vs session storage
@@ -73,3 +74,24 @@ addNoteButton.addEventListener('click', addNotes);
 4. reminder
 5. edit note
 */
+
+// 1. delete notes: implementation delete array
+
+function showDeletedNotes(){
+    let deletedNotesHTML = '';
+    let deletedNotes = localStorage.getItem('deletedNotes');
+    if(deletedNotes === null){
+        return;
+    }else{
+        deletedNotes = JSON.parse(deletedNotes);
+    }
+    for(let i=0; i<deletedNotes.length; i++){
+        deletedNotesHTML += `<div class="note deleted">
+                    <span class="title">${deletedNotes[i].title === "" ? 'Note' : deletedNotes[i].title}</span>
+                    <div class="text">${deletedNotes[i].text}</div>
+                    <div class="deletedDate">${new Date(deletedNotes[i].deleted).toLocaleString()}</div>
+                </div>
+        `
+    }
+    deletedNotesDiv.innerHTML = deletedNotesHTML;
+}
