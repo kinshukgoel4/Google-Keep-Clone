@@ -3,6 +3,7 @@ const addText = document.getElementById('addText');
 const addNoteButton = document.getElementById('addNote');
 const notesDiv = document.getElementById('notes');
 const deletedNotesDiv = document.getElementById('deletedNotes');
+const archivedNotesDiv = document.getElementById('archivedNotes');
 
 showNotes();
 // local storage vs session storage
@@ -42,9 +43,10 @@ function showNotes(){
     }
     for(let i=0; i<notes.length; i++){
         notesHTML += `<div class="note">
-                    <button class="deleteNote" id=${i} onclick="deleteNote(${i})">Delete</button>
                     <span class="title">${notes[i].title === "" ? 'Note' : notes[i].title}</span>
                     <div class="text">${notes[i].text}</div>
+                    <button class="deleteNote" id=${i} onclick="deleteNote(${i})">Delete</button>
+                    <button class="archiveNote" id="${i}" onclick="archiveNote(${i})">Archive</button>    
                 </div>
         `
     }
@@ -70,9 +72,9 @@ addNoteButton.addEventListener('click', addNotes);
 /*
 1. delete notes: implementation delete array
 2. Archieve Notes: implementation archieve array
-3. sorting filter, iterate through all the notes, and check 
-4. reminder
-5. edit note
+3. edit note
+4. sorting filter, iterate through all the notes, and check 
+5. reminder
 */
 
 // 1. delete notes: implementation delete array
@@ -95,3 +97,60 @@ function showDeletedNotes(){
     }
     deletedNotesDiv.innerHTML = deletedNotesHTML;
 }
+
+// 2. Archieve Notes: implementation archieve array
+function archiveNote(ind) {
+    let notes = localStorage.getItem("notes");
+    if (notes === null) {
+      return;
+    } else {
+      notes = JSON.parse(notes);
+    }
+  
+    const note = notes[ind];
+    if (note.title === "" || note.text === "") {
+      return;
+    }
+  
+    const archivedNote = {
+      title: note.title,
+      text: note.text,
+      archived: new Date().toISOString(),
+    };
+    let archivedNotes = localStorage.getItem("archivedNotes");
+    if (archivedNotes === null) {
+      archivedNotes = [];
+    } else {
+      archivedNotes = JSON.parse(archivedNotes);
+    }
+    archivedNotes.push(archivedNote);
+    localStorage.setItem("archivedNotes", JSON.stringify(archivedNotes));
+    notes.splice(ind, 1);
+    localStorage.setItem("notes", JSON.stringify(notes));
+    showNotes();
+    showArchivedNotes();
+  }
+  
+
+  function showArchivedNotes() {
+    let archivedNotesHTML = "";
+    let archivedNotes = localStorage.getItem("archivedNotes");
+    if (archivedNotes === null) {
+      return;
+    } else {
+      archivedNotes = JSON.parse(archivedNotes);
+    }
+    for (let i = 0; i < archivedNotes.length; i++) {
+      archivedNotesHTML += `
+        <div class="note archived">
+          <span class="title">${archivedNotes[i].title === "" ? "Note" : archivedNotes[i].title}</span>
+          <div class="text">${archivedNotes[i].text}</div>
+          <div class="archivedDate">${new Date(archivedNotes[i].archived).toLocaleString()}</div>
+        </div>
+      `;
+    }
+    archivedNotesDiv.innerHTML = archivedNotesHTML;
+    
+  }
+
+
